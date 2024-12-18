@@ -1,101 +1,210 @@
-import Image from "next/image";
+'use client'
+import { useState } from "react"
+import { Ingredient } from "@/utils/typings"
+import IngredientInput from "@/components/IngredientInput"
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [ ingredients, setIngredients ] = useState<Ingredient[]>([])
+  const [ newIngredients, setNewIngredients ] = useState<Ingredient[]>([])
+  const [ newIngredient, setNewIngredient ] = useState<Ingredient | null>(null)
+  const [variable, setVariable] = useState<Ingredient | null>(null)
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const calcPerc = (total:number, available:number) => {
+    const res = 100 * available / total
+    return res
+  } 
+
+  const definePerc = (percentage: number, value: number) => {
+    return value / 100 * percentage
+  }
+  
+  const calcolateRelation = () : void => {
+    if(variable){
+      const ing = ingredients.find((ing: Ingredient) => ing.name === variable.name)
+      if(!ing)
+        throw new Error("Ingredient is not in the list")
+      
+      const percentage = calcPerc(ing.value!, variable.value!)
+  
+      setNewIngredients(
+        ingredients.map((ing) =>  ({...ing, value: definePerc(percentage,ing.value!)}))
+      )
+    }
+
+  }
+  
+  const removeEmptyItems = () => {
+    if(ingredients.length > 0){
+      setIngredients(ingredients.filter((ing) => ing.name!.trim() !== "" && ing.value !== null))
+    }
+  }
+
+  const removeItem = (index: number) => {
+    const updatedIngredients = [...ingredients];
+    updatedIngredients.splice(index, 1);
+    setIngredients(updatedIngredients);
+  }
+
+
+  const addItem = () => {
+    if (newIngredient) {
+      if (editIndex !== null) {
+        removeEmptyItems()
+        const updatedIngredients = [...ingredients];
+        updatedIngredients[editIndex] = newIngredient;
+        setIngredients(updatedIngredients);
+        setEditIndex(null);
+      } else {
+        setIngredients([...ingredients, newIngredient]);
+      }
+      setNewIngredient(null);
+    }
+      
+  }
+
+
+  const cancelEdit = () => {
+    setNewIngredient(null);
+    setEditIndex(null);
+  };
+
+  return (
+    
+    <div className="p-2">  
+      <form
+      className="flex flex-wrap w-full justify-evenly"
+        onSubmit={(e) => {
+          e.preventDefault();
+          calcolateRelation()
+        }}
+      >    
+      <div className="w-1/5">
+      <h2 className="md:text-3xl font-extrabold	 text-bold mb-5">Ingredient List</h2>
+        {
+          ingredients.map((ing, index) => (
+            <div 
+              className="mb-1 cursor-pointer"      
+              key={"ing-"+index}
+              onClick={() => {
+                setEditIndex(index);
+                setNewIngredient(ing);
+            }}>
+              <div className="flex justify-between">
+                <p>{ing.name} - {ing.value}g</p>
+                <p style={{ cursor: 'pointer', color: 'red' }} onClick={() => removeItem(index)}>X</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      
+      <div
+        className="border p-3 pb-5 w-2/4"
+      >
+        <h2 className="text-3xl mb-3">Add Ingredient</h2>
+       <IngredientInput
+        ingredient={newIngredient!}
+        setIngredient={setNewIngredient}
+       ></IngredientInput>
+      </div>
+      <div
+        className="w-1/5"
+      >
+        <h2 className="md:text-3xl font-extrabold mb-5">Result</h2>
+       {
+        newIngredients.map((ing, index) => (
+          <div 
+            className="mb-1 cursor-default"      
+            key={"ing-"+index}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <p>{ing.name} - {ing.value}g</p>
+          </div>
+        ))
+       }
+       
+      </div>
+
+      <div>  
+        <button
+          style={{
+            padding: '10px 15px',
+            fontSize: '16px',
+            border: 'none',
+            backgroundColor: 'green',
+            color: '#fff',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            margin: '2rem'
+          }}
+          onClick={(e) => {
+            e.preventDefault(); // Prevent form from refreshing the page
+            addItem()
+          }}
+        >
+          {editIndex !== null ? 'Update Ingredient' : "Add Ingredient"}
+          </button>
+
+        {editIndex !== null && (
+          <button
+            style={{
+              padding: '10px 15px',
+              fontSize: '16px',
+              backgroundColor: '#f00',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+            onClick={(e) => {
+              e.preventDefault(); // Prevent form from refreshing the page
+              cancelEdit();
+            }}
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            Cancel
+          </button>
+        ) }
+       </div>
+
+      <div className="w-full">
+          <div
+            className="border p-3 pb-5 w-2/4"
+            style={{margin: '0 auto'}}
+            >
+          <h2 className="text-3xl mb-3">Variable</h2>
+          <IngredientInput
+            ingredient={variable!}
+            setIngredient={setVariable}
+          ></IngredientInput>
+          </div>
+      </div>
+      {/* <div className="w-full flex justify-center items-center"> */}
+
+       
+       {
+        !editIndex &&
+          <button
+            onClick={((e) => {
+              e.preventDefault()
+              calcolateRelation()
+            })}
+            style={{
+              padding: '10px 15px',
+              fontSize: '16px',
+              border: 'none',
+              backgroundColor: 'green',
+              color: '#fff',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              margin: '2rem'
+            }}>Calcolate Relation</button>
+         }
+      {/* </div> */}
+     
+      </form>
+
+      
     </div>
   );
 }
