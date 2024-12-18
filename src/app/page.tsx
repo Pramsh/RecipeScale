@@ -92,7 +92,7 @@ export default function Home() {
                 setNewIngredient(ing);
             }}>
               <div className="flex justify-between">
-                <p>{ing.name} - {ing.value}g</p>
+                <p>{ing.name} - {ing.value}</p>
                 <p style={{ cursor: 'pointer', color: 'red' }} onClick={() => removeItem(index)}>X</p>
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function Home() {
             className="mb-1 cursor-default"      
             key={"ing-"+index}
           >
-            <p>{ing.name} - {ing.value}g</p>
+            <p>{ing.name} - {ing.value}</p>
           </div>
         ))
        }
