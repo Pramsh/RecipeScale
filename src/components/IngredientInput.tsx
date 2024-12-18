@@ -1,8 +1,5 @@
 import { Ingredient } from "@/utils/typings"
-
-const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient, setIngredient?:any }) => {
-    // const [ ingredient, setIngredienv ] = useState<Ingredient | null>(null)
-
+const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient, setIngredient?: React.Dispatch<React.SetStateAction<Ingredient>> }) => {
     return (
     <div>
         <label htmlFor="input" className="block mb-2">
@@ -13,9 +10,8 @@ const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient,
             type="text"
             id="name"
             value={ingredient?.name ?? ""}
-            onChange={(e) => setIngredient && setIngredient((prev:any) => ({ ...prev, name:e.target.value}))}
             style={{ width: '100%', padding: '8px', fontSize: '16px' }}
-            pattern="^[a-zA-Z0-9]*$"
+            onChange={(e) => setIngredient && setIngredient((prev) => ({ ...prev, name: e.target.value }))}
           />
         <label htmlFor="input" className="block mb-2">
             Quantity:
@@ -25,8 +21,8 @@ const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient,
             type="number"
             id="value"
             value={ingredient?.value ?? ""}
-            onChange={(e) => setIngredient && setIngredient((prev:any) => ({ ...prev, value: e.target.value && e.target.value.trim() !== "" ? parseInt(e.target.value) : ""}))}
             style={{ width: '100%', padding: '8px', fontSize: '16px' }}
+            onChange={(e) => setIngredient && setIngredient((prev) => ({ ...prev, value: e.target.value && e.target.value.trim() !== "" ? parseInt(e.target.value) : 0 }))}
           />
     </div>
   )
