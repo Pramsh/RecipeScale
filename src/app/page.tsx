@@ -10,7 +10,8 @@ export default function Home() {
   const [ newIngredient, setNewIngredient ] = useState<Ingredient | null>(null)
   const [variable, setVariable] = useState<Ingredient | null>(null)
   const [editIndex, setEditIndex] = useState<number | null>(null);
-
+  const [ openList, setOpenList ] = useState<boolean>(true)
+  
   const calcPerc = (total:number, available:number) => {
     const res = 100 * available / total
     return res
@@ -23,14 +24,15 @@ export default function Home() {
   const calcolateRelation = () : void => {
     if(variable){
       const ing = ingredients.find((ing: Ingredient) => ing.name === variable.name)
-      if(!ing)
-        throw new Error("Ingredient is not in the list")
+      if(!ing || ing.value! < variable.value!) return
+ 
       
       const percentage = calcPerc(ing.value!, variable.value!)
   
       setNewIngredients(
         ingredients.map((ing) =>  ({...ing, value: definePerc(percentage,ing.value!)}))
       )
+      setOpenList(false)
     }
 
   }
@@ -50,6 +52,7 @@ export default function Home() {
 
   const addItem = () => {
     if (newIngredient) {
+      setOpenList(true)
       if (editIndex !== null) {
         removeEmptyItems()
         const updatedIngredients = [...ingredients];
@@ -72,7 +75,7 @@ export default function Home() {
 
   return (
     
-    <div className="p-2">  
+    <div>  
       <form
       className="flex flex-wrap w-full justify-evenly"
         onSubmit={(e) => {
@@ -80,7 +83,9 @@ export default function Home() {
           calcolateRelation()
         }}
       >    
-      <div className="w-1/5">
+      {
+         openList ? (
+      <div className={`w-1/5 ${newIngredients.length > 0 && "widthTransitionLeft"}`}>
       <h2 className="md:text-3xl font-extrabold	 text-bold mb-5">Ingredient List</h2>
         {
           ingredients.map((ing, index) => (
@@ -92,84 +97,78 @@ export default function Home() {
                 setNewIngredient(ing);
             }}>
               <div className="flex justify-between">
-                <p>{ing.name} - {ing.value}</p>
+                <div>
+                  <p>{ing.name}</p>
+                  <p>- {ing.value && ing.value / 100}</p>
+                </div>
                 <p style={{ cursor: 'pointer', color: 'red' }} onClick={() => removeItem(index)}>X</p>
               </div>
             </div>
           ))
         }
       </div>
-      
-      <div
-        className="border p-3 pb-5 w-2/4"
-      >
-        <h2 className="text-3xl mb-3">Add Ingredient</h2>
-       <IngredientInput
-        ingredient={newIngredient!}
-        setIngredient={setNewIngredient}
-       ></IngredientInput>
-      </div>
-      <div
-        className="w-1/5"
-      >
-        <h2 className="md:text-3xl font-extrabold mb-5">Result</h2>
-       {
-        newIngredients.map((ing, index) => (
-          <div 
-            className="mb-1 cursor-default"      
-            key={"ing-"+index}
-          >
-            <p>{ing.name} - {ing.value}</p>
-          </div>
-        ))
-       }
-       
-      </div>
-
-      <div>  
-        <button
-          style={{
-            padding: '10px 15px',
-            fontSize: '16px',
-            border: 'none',
-            backgroundColor: 'green',
-            color: '#fff',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            margin: '2rem'
-          }}
-          onClick={(e) => {
-            e.preventDefault(); // Prevent form from refreshing the page
-            addItem()
-          }}
+        )
+        :
+        <div onClick={()=> setOpenList(true)} className="fixed top-0 left-2 font-extrabold">{"->"}</div>
+      }
+        <div
+          className="border p-2 w-2/4"
         >
-          {editIndex !== null ? 'Update Ingredient' : "Add Ingredient"}
-          </button>
+          <h2 className="text-3xl mb-3">Add Ingredient</h2>
+        <IngredientInput
+          ingredient={newIngredient!}
+          setIngredient={setNewIngredient}
+        ></IngredientInput>
+         
+          <div className="flex justify-center items-center">
+            <button
+              style={{
+                padding: '10px 15px',
+                fontSize: '16px',
+                border: 'none',
+                backgroundColor: 'green',
+                color: '#fff',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginRight: '2px',
+                marginTop: '1rem',
+                marginBottom: '0.5rem'
+              }}
+              onClick={(e) => {
+                e.preventDefault(); // Prevent form from refreshing the page
+                addItem()
+              }}
+            >
+              {editIndex !== null ? 'Update' : "Add Ingredient"}
+              </button>
 
-        {editIndex !== null && (
-          <button
-            style={{
-              padding: '10px 15px',
-              fontSize: '16px',
-              backgroundColor: '#f00',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer'
-            }}
-            onClick={(e) => {
-              e.preventDefault(); // Prevent form from refreshing the page
-              cancelEdit();
-            }}
-          >
-            Cancel
-          </button>
-        ) }
-       </div>
-
-      <div className="w-full">
+            {editIndex !== null && (
+              <button
+                style={{
+                  padding: '10px 15px',
+                  fontSize: '16px',
+                  backgroundColor: '#f00',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  marginLeft: '2px',
+                  marginTop: '1rem',
+                  marginBottom: '0.5rem'
+                }}
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent form from refreshing the page
+                  cancelEdit();
+                }}
+              >
+                Cancel
+              </button>
+            ) }
+          </div>
+          
+       <div className="w-full">
           <div
-            className="border p-3 pb-5 w-2/4"
+            className="pb-5"
             style={{margin: '0 auto'}}
             >
           <h2 className="text-3xl mb-3">Variable</h2>
@@ -178,10 +177,7 @@ export default function Home() {
             setIngredient={setVariable}
           ></IngredientInput>
           </div>
-      </div>
-      {/* <div className="w-full flex justify-center items-center"> */}
-
-       
+      </div>     
        {
         !editIndex &&
           <button
@@ -197,10 +193,37 @@ export default function Home() {
               color: '#fff',
               borderRadius: '5px',
               cursor: 'pointer',
-              margin: '2rem'
             }}>Calcolate Relation</button>
          }
-      {/* </div> */}
+        </div>
+
+      
+      {
+        newIngredients.length > 0 && !openList ? (
+          <div
+            className="w-1/5 widthTransitionRight"
+          >
+            <h2 className="md:text-3xl font-extrabold mb-5">Result</h2>
+          {
+            newIngredients.map((ing, index) => (
+              <div 
+                className="mb-1 cursor-default"      
+                key={"ing-"+index}
+              >
+                <p>{ing.name}</p>
+                <p>- {ing.value && ing.value / 100}</p>
+              </div>
+            ))
+          }
+          
+          </div>
+        )
+        :
+        <div onClick={()=> setOpenList(false)} className="fixed top-0 right-2 font-extrabold">{"<-"}</div>
+        
+      }
+
+
      
       </form>
 

@@ -1,6 +1,6 @@
 import { Ingredient } from "@/utils/typings"
 import { Dispatch, SetStateAction } from "react"
-const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient, setIngredient: Dispatch<SetStateAction<Ingredient | null>> }) => {
+const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient | null, setIngredient: Dispatch<SetStateAction<Ingredient | null>> }) => {
     return (
     <div>
         <label htmlFor="input" className="block mb-2">
@@ -18,12 +18,13 @@ const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient,
             Quantity:
         </label>
           <input
+          step="0.001"
             className="border"
             type="number"
             id="value"
-            value={ingredient?.value ?? ""}
+            value={ingredient?.value ? ingredient?.value / 100 :  ""}
             style={{ width: '100%', padding: '8px', fontSize: '16px' }}
-            onChange={(e) => setIngredient && setIngredient((prev) => ({ ...prev, value: e.target.value && e.target.value.trim() !== "" ? parseInt(e.target.value) : 0 }))}
+            onChange={(e) => setIngredient && setIngredient((prev) => ({ ...prev, value: parseFloat(e.target.value) * 100 || null}))}
           />
     </div>
   )
