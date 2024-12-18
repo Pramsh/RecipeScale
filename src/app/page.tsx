@@ -109,7 +109,7 @@ export default function Home() {
       </div>
         )
         :
-        <div onClick={()=> setOpenList(true)} className="fixed top-0 left-2 font-extrabold">{"->"}</div>
+        <div onClick={()=> setOpenList(true)} className="fixed top-0 left-2 font-extrabold cursor-pointer">{"->"}</div>
       }
         <div
           className="border p-2 w-2/4"
@@ -199,7 +199,7 @@ export default function Home() {
 
       
       {
-        newIngredients.length > 0 && !openList ? (
+        newIngredients.length > 0 && !openList && (
           <div
             className="w-1/5 widthTransitionRight"
           >
@@ -217,10 +217,12 @@ export default function Home() {
           }
           
           </div>
+        )    
+      }
+      {
+        newIngredients.length > 0 && openList && (
+          <div onClick={()=> setOpenList(false)} className="fixed top-0 right-2 font-extrabold cursor-pointer">{"<-"}</div>
         )
-        :
-        <div onClick={()=> setOpenList(false)} className="fixed top-0 right-2 font-extrabold">{"<-"}</div>
-        
       }
 
 
