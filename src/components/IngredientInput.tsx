@@ -1,5 +1,6 @@
 import { Ingredient } from "@/utils/typings"
-const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient, setIngredient?: React.Dispatch<React.SetStateAction<Ingredient>> }) => {
+import { Dispatch, SetStateAction } from "react"
+const IngredientInput = ({ingredient, setIngredient } : {ingredient: Ingredient, setIngredient: Dispatch<SetStateAction<Ingredient | null>> }) => {
     return (
     <div>
         <label htmlFor="input" className="block mb-2">
