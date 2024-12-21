@@ -43,6 +43,7 @@ const handlePeopleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             ))
         }
         <div className="absolute bottom-[15%] w-5/6">
+        <div className="flex flex-row-reverse">
             <input
             type="range"
             min="1"
@@ -51,7 +52,8 @@ const handlePeopleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             onChange={handlePeopleChange}
             className="w-full"
             />
-            <span className="ms-3">{people || numberOfPeople}</span>
+            <span className="me-3">{people || numberOfPeople}</span>
+        </div>
         </div>
   </div>
   )
