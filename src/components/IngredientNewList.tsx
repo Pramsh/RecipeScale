@@ -17,7 +17,7 @@ const IngredientNewList = ({numberOfPeople, newIngredients}: IngredientNewListPr
             setMultipliedIngredients( newIngredients.map(ingredient => (
                 { 
                     ...ingredient,
-                    value: ingredient?.value! * people
+                    value: ingredient.value! * people
                 }
             )))
         }
