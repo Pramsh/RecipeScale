@@ -8,9 +8,6 @@ const HowManyPeople = ({numberOfPeople, setNumberOfPeople} : { numberOfPeople:nu
 
     const handleClickOutside = (event: MouseEvent) => {
         if (toggleDiv.current && !toggleDiv.current.contains(event.target as Node)) {
-          console.log('Clicked outside the div');
-          console.log('toggleOpen', toggleOpen);
-          
           setToggleOpen(false)
         }
       };

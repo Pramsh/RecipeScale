@@ -1,4 +1,4 @@
-import { Ingredient, NewIngredients } from "@/utils/typings"
+import { Ingredient } from "@/utils/typings"
 import { Dispatch, SetStateAction } from "react";
 import HowManyPeople from "./HowManyPeople";
 

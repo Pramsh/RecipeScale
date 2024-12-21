@@ -1,23 +1,16 @@
 'use client'
-import { useEffect, useRef, useState } from "react"
-import { Ingredient, NewIngredients } from "@/utils/typings"
-import { Dispatch, SetStateAction } from "react"
-import { log } from "node:console"
+import { useEffect, useState } from "react"
+import { Ingredient } from "@/utils/typings"
+
 
 interface IngredientNewListProps {
     newIngredients: Ingredient[]
     numberOfPeople: number //initial number of people
 }
 
-//in base a quello che mi arriva da newIngredients.numberOfPeople determino il valore iniziale 
 const IngredientNewList = ({numberOfPeople, newIngredients}: IngredientNewListProps) => {
     const [multipliedIngredients, setMultipliedIngredients] = useState(newIngredients)
-    // const initialNumberOfPeople = useRef<number>(numberOfPeople)
     const [people, setPeople] = useState<number>()
-
-    const getCurrentPeople = (initialNumberOfPeople: number, people: number) => {
-        const currentPeople = initialNumberOfPeople + people
-    }
 
     useEffect(() => {
         if(people){
