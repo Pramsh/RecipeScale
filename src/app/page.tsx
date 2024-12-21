@@ -2,7 +2,8 @@
 import { useState } from "react"
 import { Ingredient } from "@/utils/typings"
 import IngredientInput from "@/components/IngredientInput"
-
+import IngredientList from "@/components/IngredientList"
+import IngredientNewList from "@/components/IngredientNewList"
 
 export default function Home() {
   const [ ingredients, setIngredients ] = useState<Ingredient[]>([])
@@ -11,7 +12,8 @@ export default function Home() {
   const [variable, setVariable] = useState<Ingredient | null>(null)
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [ openList, setOpenList ] = useState<boolean>(true)
-  
+  const [ numberOfPeople, setNumberOfPeople ] = useState<number>(1)
+
   const calcPerc = (total:number, available:number) => {
     const res = 100 * available / total
     return res
@@ -22,6 +24,7 @@ export default function Home() {
   }
   
   const calcolateRelation = () : void => {
+    
     if(variable){
       const ing = ingredients.find((ing: Ingredient) => ing.name === variable.name)
       if(!ing || ing.value! < variable.value!) return
@@ -30,7 +33,7 @@ export default function Home() {
       const percentage = calcPerc(ing.value!, variable.value!)
   
       setNewIngredients(
-        ingredients.map((ing) =>  ({...ing, value: definePerc(percentage,ing.value!)}))
+       ingredients.map((ing) =>  ({...ing, value: definePerc(percentage,ing.value!)}))
       )
       setOpenList(false)
     }
@@ -74,10 +77,10 @@ export default function Home() {
   };
 
   return (
-    
+//devo far si che si popoli l'oggetto con il numero di persone corrette    
     <div>  
       <form
-      className="flex flex-wrap w-full justify-evenly"
+      className="flex flex-wrap w-full justify-evenly p-1 md:p-2"
         onSubmit={(e) => {
           e.preventDefault();
           calcolateRelation()
@@ -85,28 +88,16 @@ export default function Home() {
       >    
       {
          openList ? (
-      <div className={`w-1/5 ${newIngredients.length > 0 && "widthTransitionLeft"}`}>
-      <h2 className="md:text-3xl font-extrabold	 text-bold mb-5">Ingredient List</h2>
-        {
-          ingredients.map((ing, index) => (
-            <div 
-              className="mb-1 cursor-pointer"      
-              key={"ing-"+index}
-              onClick={() => {
-                setEditIndex(index);
-                setNewIngredient(ing);
-            }}>
-              <div className="flex justify-between">
-                <div>
-                  <p>{ing.name}</p>
-                  <p>- {ing.value && ing.value / 100}</p>
-                </div>
-                <p style={{ cursor: 'pointer', color: 'red' }} onClick={() => removeItem(index)}>X</p>
-              </div>
-            </div>
-          ))
-        }
-      </div>
+          <IngredientList
+            ingredients={ingredients}
+            newIngredients={newIngredients}
+            setEditIndex={setEditIndex}
+            setNewIngredients={setNewIngredients}
+            setNewIngredient={setNewIngredient}
+            removeItem={removeItem}
+            numberOfPeople={numberOfPeople}
+            setNumberOfPeople={setNumberOfPeople}
+          />
         )
         :
         <div onClick={()=> setOpenList(true)} className="fixed top-0 left-2 font-extrabold cursor-pointer">{"->"}</div>
@@ -200,23 +191,10 @@ export default function Home() {
       
       {
         newIngredients.length > 0 && !openList && (
-          <div
-            className="w-1/5 widthTransitionRight"
-          >
-            <h2 className="md:text-3xl font-extrabold mb-5">Result</h2>
-          {
-            newIngredients.map((ing, index) => (
-              <div 
-                className="mb-1 cursor-default"      
-                key={"ing-"+index}
-              >
-                <p>{ing.name}</p>
-                <p>- {ing.value && ing.value / 100}</p>
-              </div>
-            ))
-          }
-          
-          </div>
+          <IngredientNewList
+            numberOfPeople={numberOfPeople}
+            newIngredients={newIngredients}
+          />
         )    
       }
       {

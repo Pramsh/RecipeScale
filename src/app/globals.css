@@ -34,6 +34,24 @@ form{
         transform: translateX(0%);
     }
 }
+@keyframes transformRotLeft {
+    0% {
+        transform: translateX(100%) rotate(0deg);
+    }
+    100% {
+        transform: translateX(0%) rotate(90deg);
+    }
+}
+
+@keyframes transformRotRight {
+    0% {
+        transform: translateX(-100%) rotate(90deg);
+    }
+    100% {
+        transform: translateX(0%) rotate(0deg);
+    }
+    
+}
 
 
 .widthTransitionLeft {
@@ -42,4 +60,13 @@ form{
 
 .widthTransitionRight {
     animation: shiftRight 0.2s ease-in-out;
+}
+
+
+.toggleTrasformRight {
+    animation: transformRotLeft 0.8s ease-in-out;
+}
+
+.toggleTrasformLeft {
+    animation: transformRotRight 0.8s ease-in-out;
 }
